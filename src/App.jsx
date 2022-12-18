@@ -5,26 +5,30 @@ import Die from './components/Die'
 import Confetti from 'react-confetti'
 
 function App() {
-  const [dieData, setDieData] = useState([])
+  const [dieData, setDieData] = useState(generateDice)
   const [clickedDice, setClickedDice] = useState([])
-  const [gameState, setGameState] = useState("playing")
+  const [didIWin, setDidIWin] = useState(false)
 
-  useEffect(()=>{
-      let dieArray = new Array()
-      for (let i = 0; i < 10; i ++){
-          let num = Math.floor(Math.random() * 6) + 1;
-          dieArray.push({id: i, number: num, clicked: false});
-      }
-      setDieData(dieArray)
-  }, []);
+  function generateDice(){
+    let dieArray = new Array()
+    for (let i = 0; i < 10; i ++){
+        let num = Math.floor(Math.random() * 6) + 1;
+        dieArray.push({id: i, number: num, clicked: false});
+    }
+    return dieArray 
+  }
+  
 
   useEffect(()=>{
     setClickedDice(dieData.filter(clickedDie => clickedDie.clicked === true))
   }, [dieData])
 
   useEffect(() =>{
-    if (clickedDice.length > 0 && clickedDice.length === dieData.length){
-      setGameState("won")
+    const numberValue = dieData[0].number
+    const sameValue = dieData.every(die => die.number === numberValue)
+    const allHeld = dieData.every(die=> die.clicked === true)
+    if (clickedDice.length > 0 && allHeld && sameValue ){
+      setDidIWin(true)
 
     }
   }, [clickedDice])
@@ -36,32 +40,15 @@ function App() {
   }
 
   function changeColor(id){
-    let clickedNumber
-    if (clickedDice.length > 0){
-      clickedNumber = clickedDice[0].number
-    }
-    
-
-    setDieData(oldData =>oldData.map(oldDie =>{
-      if (oldDie.id === id && (oldDie.number === clickedNumber || clickedDice.length === 0)){
-        return {...oldDie, clicked: !oldDie.clicked}
-      } else {
-        return oldDie
-      }
-    }))
+    setDieData(oldData =>oldData.map(oldDie =>
+      oldDie.id === id ? {...oldDie, clicked: !oldDie.clicked} : oldDie
+    ))
   }
 
   function resetGame(){
-    setDieData(()=> {
-      let dieArray = new Array()
-      for (let i = 0; i < 10; i ++){
-        let num = Math.floor(Math.random() * 6) + 1;
-        dieArray.push({id: i, number: num, clicked: false});
-      }
-      return dieArray}
-    )
+    setDieData(generateDice)
     setClickedDice([])
-    setGameState("playing")
+    setDidIWin(false)
   }
 
 
@@ -71,13 +58,13 @@ function App() {
   return(
     <div className='App'>
       <main>
-          {gameState === "won" && <Confetti/>}
+          {didIWin && <Confetti/>}
           <h1>Tenzies</h1>
           <h3>Roll until all dice are the same. Click each die to freeze it at its current value between rolls.</h3>
           <div className="diceDiv">
              {visualDice}
           </div>
-          { gameState === "playing" ?  <button onClick={rollDice}>Roll</button> :
+          { !didIWin ?  <button onClick={rollDice}>Roll</button> :
           <button onClick={resetGame}>Reset Game</button>}
       </main>
     </div>

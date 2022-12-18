@@ -32,27 +32,15 @@ main > h3{
 }
 
 .diceDiv{
-  display: flex;
+  display: grid;
+  grid-template: auto auto / repeat(5, 1fr);
   justify-content: center;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 5px;
   margin-left: 40px;
   margin-right: 40px;
   margin-top: 35px;
   margin-bottom: 35px;
-}
-
-.die{
-  font-size: 21px;
-  font-weight: 700;
-  height: 32px;
-  width: 38px;
-  box-shadow: 10px 2px 5px gray;
-  background-color: white;
-  border-radius: 4px;
-  padding-top: 6px;
-  margin: 0px 12px 10px 15px;
-  cursor: pointer;
 }
 
 main> button{
@@ -74,3 +62,118 @@ main> button{
 main> button:active {
   box-shadow: inset 0 0 10px black;
 }
+
+.die{
+  font-weight: 700;
+  height: 42px;
+  width: 42px;
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.15);
+  background-color: white;
+  border-radius: 4px;
+  margin: 0px 12px 10px 15px;
+  cursor: pointer;
+  padding: 8px;
+  
+}
+
+
+
+.dot{
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color:black;
+}
+
+
+.number1{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.number2{
+  display: flex;
+  justify-content : space-between;
+}
+
+.number2 > .dot:nth-of-type(2){
+  align-self: flex-end;
+}
+
+
+.number3 {
+  display: flex;
+  justify-content: space-between;
+}
+  
+.number3 .dot:nth-of-type(2) {
+  align-self: center;
+  margin: 0;
+}
+
+.number3 .dot:nth-of-type(3) {
+  align-self: flex-end;
+  margin: 0;
+}
+
+.number4, .number5, .number6{
+  display: grid;
+  grid-template-areas:
+      "a . c"
+      "e g f"
+      "d . b";
+  gap: 4px;
+}
+
+.number4 .dot:nth-of-type(1){
+  grid-area: a;
+}
+.number4 .dot:nth-of-type(2){
+  grid-area: c;
+}
+.number4 .dot:nth-of-type(3){
+  grid-area: d;
+}
+.number4 .dot:nth-of-type(4){
+  grid-area: b;
+}
+
+.number5 .dot:nth-of-type(1){
+  grid-area: a;
+}
+.number5 .dot:nth-of-type(2){
+  grid-area: c;
+}
+.number5 .dot:nth-of-type(3){
+  grid-area: d;
+}
+.number5 .dot:nth-of-type(4){
+  grid-area: b;
+}
+.number5 .dot:nth-of-type(5){
+  grid-area: g;
+}
+
+.number6 .dot:nth-of-type(1){
+  grid-area: a;
+}
+.number6 .dot:nth-of-type(2){
+  grid-area: c;
+}
+.number6 .dot:nth-of-type(3){
+  grid-area: d;
+}
+.number6 .dot:nth-of-type(4){
+  grid-area: b;
+}
+.number6 .dot:nth-of-type(5){
+  grid-area: f;
+}
+.number6 .dot:nth-of-type(6){
+  grid-area: e;
+}
+
+
+
