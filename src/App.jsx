@@ -1,13 +1,19 @@
-import { useState, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
+import { useState, useEffect, useRef } from 'react'
+import { useWindowSize } from 'react-use'
 import './App.css'
 import Die from './components/Die'
 import Confetti from 'react-confetti'
 
+
 function App() {
   const [dieData, setDieData] = useState(generateDice)
-  const [clickedDice, setClickedDice] = useState([])
   const [didIWin, setDidIWin] = useState(false)
+  const [count, setCount] = useState(0)
+  const [bestTime, setBestTime] = useState(() => (JSON.parse(localStorage.getItem("score")) || [0]))
+  const [time, setTime] = useState(0)
+
+  const { width, height } = useWindowSize()
+  const countRef = useRef(null)
 
   function generateDice(){
     let dieArray = new Array()
@@ -17,38 +23,64 @@ function App() {
     }
     return dieArray 
   }
-  
+
+  console.log(bestTime)
 
   useEffect(()=>{
-    setClickedDice(dieData.filter(clickedDie => clickedDie.clicked === true))
-  }, [dieData])
+    setBestTime(JSON.parse(localStorage.getItem("score")) || [0])
+  }, [didIWin])
+
+  useEffect(()=>{
+    if ((bestTime[0] === 0 || time < bestTime) && time != 0){
+      localStorage.setItem("score", JSON.stringify(time))
+    }
+  }, [didIWin])
+  
+  function startTimer(){
+    const countTime = () => {
+      setTime(prevTime => prevTime + 1)
+    }
+    countRef.current = setInterval(countTime, 1000);
+  }
+
+  useEffect(() => {
+    startTimer();
+  }, []);
 
   useEffect(() =>{
     const numberValue = dieData[0].number
     const sameValue = dieData.every(die => die.number === numberValue)
     const allHeld = dieData.every(die=> die.clicked === true)
-    if (clickedDice.length > 0 && allHeld && sameValue ){
+    if (allHeld && sameValue ){
+      clearInterval(countRef.current);
       setDidIWin(true)
-
     }
-  }, [clickedDice])
+  }, [changeColor])
+
+  function addCount(){
+    setCount(prevCount => prevCount + 1)
+  }
 
   function rollDice(){
     setDieData(oldData => oldData.map(oldDie =>
         oldDie.clicked ? oldDie : {...oldDie, number : Math.floor(Math.random() * 6) + 1 }
       ))
+    addCount();
   }
 
   function changeColor(id){
-    setDieData(oldData =>oldData.map(oldDie =>
+      setDieData(oldData =>oldData.map(oldDie =>
       oldDie.id === id ? {...oldDie, clicked: !oldDie.clicked} : oldDie
     ))
+
   }
 
   function resetGame(){
     setDieData(generateDice)
-    setClickedDice([])
     setDidIWin(false)
+    setCount(0)
+    setTime(0)
+    startTimer()
   }
 
 
@@ -57,10 +89,15 @@ function App() {
 
   return(
     <div className='App'>
+      {didIWin && <Confetti width={width} height={height}/>}
       <main>
-          {didIWin && <Confetti/>}
           <h1>Tenzies</h1>
           <h3>Roll until all dice are the same. Click each die to freeze it at its current value between rolls.</h3>
+          <div className='scoreDiv'>
+            <h4>Rolls: {count}</h4>
+            <h4>Timer: {time}</h4>
+            <h4>Best Time: {bestTime}</h4>
+          </div>
           <div className="diceDiv">
              {visualDice}
           </div>
